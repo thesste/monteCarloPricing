@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-public class validateInputTest {
+public class ValidateInputTestEuropeanCallPut {
 
 	@Test
 	public void testValidateInput() {
