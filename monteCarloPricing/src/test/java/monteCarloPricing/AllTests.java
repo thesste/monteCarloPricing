@@ -10,7 +10,8 @@ import org.junit.runners.Suite.SuiteClasses;
 				ValidateInputTestEuropeanCallPut.class,
 				EuropeanCallPutPayoffTest.class,
 				BarrierCallPutPayoffTest.class,
-				IsActiveTest.class})
+				IsActiveTest.class,
+				CalculateDiscountedPayoffTest.class})
 /**
  * Class to run all tests at once
  * @author thesste

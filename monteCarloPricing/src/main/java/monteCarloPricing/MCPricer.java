@@ -189,6 +189,16 @@ public class MCPricer {
 	}
 	
 	/**
+	 * Calculates discounted payoff based on market's risk-free rate
+	 * @param payoff payoff
+	 * @param maturity maturity
+	 * @return discounted payoff
+	 */
+	public double calculateDiscountedPayoff(double payoff, double maturity) {
+		return payoff*Math.exp((-1)*maturity*interestRate);
+	}
+	
+	/**
 	 * Calculates the discounted pay-offs for the paths
 	 * @param paths paths
 	 * @param strike strike price
@@ -205,12 +215,12 @@ public class MCPricer {
 		if (barrierType.equals("None")) {
 			for (int currentPathNumber = 0; currentPathNumber<numberOfPaths; currentPathNumber++) {
 				FinancialInstrument currentInstrument = new EuropeanCallPut(strike, optionType);
-				discountedPayoffsForPaths[currentPathNumber] = currentInstrument.payoff(paths[currentPathNumber])*Math.exp((-1)*maturity*interestRate);
+				discountedPayoffsForPaths[currentPathNumber] = calculateDiscountedPayoff(currentInstrument.payoff(paths[currentPathNumber]), maturity);
 			}
 		} else {
 			for (int currentPathNumber = 0; currentPathNumber<numberOfPaths; currentPathNumber++) {
 				FinancialInstrument currentInstrument = new KnockInOutBarrierCallPut(strike, barrier, optionType, barrierType);
-				discountedPayoffsForPaths[currentPathNumber] = currentInstrument.payoff(paths[currentPathNumber])*Math.exp((-1)*maturity*interestRate);
+				discountedPayoffsForPaths[currentPathNumber] = calculateDiscountedPayoff(currentInstrument.payoff(paths[currentPathNumber]), maturity);
 			}
 		}
 		return discountedPayoffsForPaths;
