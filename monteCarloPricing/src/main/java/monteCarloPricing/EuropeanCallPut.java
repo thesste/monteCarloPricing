@@ -35,8 +35,8 @@ public class EuropeanCallPut implements FinancialInstrument {
 		return validOptionTypes;
 	}
 
-	public EuropeanCallPut(double[] path, double strike, double barrier, String optionType, String barrierType) {
-		this.underlyingAtMaturity = path[path.length-1];
+	public EuropeanCallPut(double underlyingAtMaturity, double strike, String optionType) {
+		this.underlyingAtMaturity = underlyingAtMaturity;//path[path.length-1];
 		this.strike = strike;
 		this.optionType = optionType;
 	}

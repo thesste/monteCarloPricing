@@ -8,8 +8,7 @@ public class ValidateInputTestEuropeanCallPut {
 
 	@Test
 	public void testValidateInput() {
-		double[] path = {100, 110};
-		EuropeanCallPut test = new EuropeanCallPut(path, 100, 90, "Call", "UpIn");
+		EuropeanCallPut test = new EuropeanCallPut(110, 100, "Call");
 		
 		boolean output1 = test.validateInput("Option");
 		assertFalse(output1);
