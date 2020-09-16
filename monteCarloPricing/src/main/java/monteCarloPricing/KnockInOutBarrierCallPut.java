@@ -2,21 +2,12 @@ package monteCarloPricing;
 
 public class KnockInOutBarrierCallPut implements FinancialInstrument {
 	
-	private double[] path;
 	private double strike;
 	private double barrier;
 	private String optionType;
 	private String barrierType;
 	private String[] validOptionTypes = {"Call", "Put"};
 	private String[] validBarrierTypes = {"UpIn", "DownIn", "UpOut", "DownOut"};	
-
-	public double[] getPath() {
-		return path;
-	}
-
-	public void setPath(double[] path) {
-		this.path = path;
-	}
 
 	public double getStrike() {
 		return strike;
@@ -58,44 +49,43 @@ public class KnockInOutBarrierCallPut implements FinancialInstrument {
 		return validBarrierTypes;
 	}
 
-	public KnockInOutBarrierCallPut(double[] path, double strike, double barrier, String optionType, String barrierType) {
-		this.path = path;
+	public KnockInOutBarrierCallPut(double strike, double barrier, String optionType, String barrierType) {
 		this.strike = strike;
 		this.barrier = barrier;
 		this.optionType = optionType;
 		this.barrierType = barrierType;
 	}
 	
-	public boolean isActive() {	
+	public boolean isActive(double[] underlyingPath) {	
 		boolean active;
 		if (barrierType.equals("UpIn")) {
 			active = false;
-			for (int currentTradingDay = 0; currentTradingDay<path.length; currentTradingDay++) {
-				if (path[currentTradingDay]>=barrier) {
+			for (int currentTradingDay = 0; currentTradingDay<underlyingPath.length; currentTradingDay++) {
+				if (underlyingPath[currentTradingDay]>=barrier) {
 					active = true;
 					break;
 				}
 			}
 		} else if (barrierType.equals("DownIn")) {
 			active = false;
-			for (int currentTradingDay = 0; currentTradingDay<path.length; currentTradingDay++) {
-				if (path[currentTradingDay]<=barrier) {
+			for (int currentTradingDay = 0; currentTradingDay<underlyingPath.length; currentTradingDay++) {
+				if (underlyingPath[currentTradingDay]<=barrier) {
 					active = true;
 					break;
 				}
 			}
 		} else if (barrierType.equals("UpOut")) {
 			active = true;
-			for (int currentTradingDay = 0; currentTradingDay<path.length; currentTradingDay++) {
-				if (path[currentTradingDay]>=barrier) {
+			for (int currentTradingDay = 0; currentTradingDay<underlyingPath.length; currentTradingDay++) {
+				if (underlyingPath[currentTradingDay]>=barrier) {
 					active = false;
 					break;
 				}
 			}
 		} else if (barrierType.equals("DownOut")) {
 			active = true;
-			for (int currentTradingDay = 0; currentTradingDay<path.length; currentTradingDay++) {
-				if (path[currentTradingDay]<=barrier) {
+			for (int currentTradingDay = 0; currentTradingDay<underlyingPath.length; currentTradingDay++) {
+				if (underlyingPath[currentTradingDay]<=barrier) {
 					active = false;
 					break;
 				}
@@ -117,18 +107,18 @@ public class KnockInOutBarrierCallPut implements FinancialInstrument {
 		return valid;
 	}
 
-	public double payoff() {
+	public double payoff(double[] underlyingPath) {
 		assert validateInput(optionType, validOptionTypes)  : "\nPlease select a valid option type!";
 		assert validateInput(barrierType, validBarrierTypes)  : "\nPlease select a valid barrier type!";
 		if (optionType.equals("Call")) {
-			if (isActive()) {
-				return Math.max(path[path.length-1] - strike, 0);
+			if (isActive(underlyingPath)) {
+				return Math.max(underlyingPath[underlyingPath.length-1] - strike, 0);
 			} else {
 				return 0;
 			}
 		} else if (optionType.equals("Put")) {
-			if (isActive()) {
-				return Math.max(strike - path[path.length-1], 0);
+			if (isActive(underlyingPath)) {
+				return Math.max(strike - underlyingPath[underlyingPath.length-1], 0);
 			} else {
 				return 0;
 			}

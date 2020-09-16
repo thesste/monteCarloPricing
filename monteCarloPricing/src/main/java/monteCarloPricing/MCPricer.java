@@ -172,14 +172,13 @@ public class MCPricer {
 		
 		if (barrierType.equals("None")) {
 			for (int currentPathNumber = 0; currentPathNumber<numberOfPaths; currentPathNumber++) {
-				double underlyingAtMaturity = restrictedPaths[currentPathNumber][restrictedPaths[currentPathNumber].length-1];
-				FinancialInstrument currentInstrument = new EuropeanCallPut(underlyingAtMaturity, strike, optionType);
-				discountedPayoffsForPaths[currentPathNumber] = currentInstrument.payoff()*Math.exp((-1)*maturity*interestRate);
+				FinancialInstrument currentInstrument = new EuropeanCallPut(strike, optionType);
+				discountedPayoffsForPaths[currentPathNumber] = currentInstrument.payoff(restrictedPaths[currentPathNumber])*Math.exp((-1)*maturity*interestRate);
 			}
 		} else {
 			for (int currentPathNumber = 0; currentPathNumber<numberOfPaths; currentPathNumber++) {
-				FinancialInstrument currentInstrument = new KnockInOutBarrierCallPut(restrictedPaths[currentPathNumber], strike, barrier, optionType, barrierType);
-				discountedPayoffsForPaths[currentPathNumber] = currentInstrument.payoff()*Math.exp((-1)*maturity*interestRate);
+				FinancialInstrument currentInstrument = new KnockInOutBarrierCallPut(strike, barrier, optionType, barrierType);
+				discountedPayoffsForPaths[currentPathNumber] = currentInstrument.payoff(restrictedPaths[currentPathNumber])*Math.exp((-1)*maturity*interestRate);
 			}
 		}
 		return discountedPayoffsForPaths;
@@ -293,7 +292,6 @@ public class MCPricer {
 		pricer.generatePaths();
 		
 		boolean anotherTrade = true;
-		
 		while (anotherTrade) {
 				
 			/*

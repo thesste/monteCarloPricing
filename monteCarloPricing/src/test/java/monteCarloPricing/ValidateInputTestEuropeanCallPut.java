@@ -8,7 +8,7 @@ public class ValidateInputTestEuropeanCallPut {
 
 	@Test
 	public void testValidateInput() {
-		EuropeanCallPut test = new EuropeanCallPut(110, 100, "Call");
+		EuropeanCallPut test = new EuropeanCallPut(100, "Call");
 		
 		boolean output1 = test.validateInput("Option");
 		assertFalse(output1);

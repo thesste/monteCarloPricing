@@ -8,7 +8,7 @@ public class ValidateInputTestBarrierOption {
 
 	@Test
 	public void testValidateInput() {
-		KnockInOutBarrierCallPut test = new KnockInOutBarrierCallPut(null, 100, 90, "Call", "UpIn");
+		KnockInOutBarrierCallPut test = new KnockInOutBarrierCallPut(100, 90, "Call", "UpIn");
 		
 		boolean output1 = test.validateInput("Option", test.getValidOptionTypes());
 		assertFalse(output1);
