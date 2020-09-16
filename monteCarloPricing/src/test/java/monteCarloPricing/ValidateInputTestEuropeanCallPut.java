@@ -12,13 +12,13 @@ public class ValidateInputTestEuropeanCallPut {
 		EuropeanCallPut test = new EuropeanCallPut(path, 100, 90, "Call", "UpIn");
 		
 		boolean output1 = test.validateInput("Option");
-		assertEquals(false, output1);
+		assertFalse(output1);
 		
 		boolean output2 = test.validateInput("Call");
-		assertEquals(true, output2);
+		assertTrue(output2);
 		
 		boolean output3 = test.validateInput("Put");
-		assertEquals(true, output3);
+		assertTrue(output3);
 	}
 
 }
