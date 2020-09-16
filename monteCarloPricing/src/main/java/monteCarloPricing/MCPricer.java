@@ -172,7 +172,7 @@ public class MCPricer {
 		
 		if (barrierType.equals("None")) {
 			for (int currentPathNumber = 0; currentPathNumber<numberOfPaths; currentPathNumber++) {
-				FinancialInstrument currentInstrument = new EuropeanCallPut(restrictedPaths[currentPathNumber][restrictedPaths[currentPathNumber].length-1], strike, optionType);
+				FinancialInstrument currentInstrument = new EuropeanCallPut(restrictedPaths[currentPathNumber], strike, barrier, optionType, barrierType);
 				discountedPayoffsForPaths[currentPathNumber] = currentInstrument.payoff()*Math.exp((-1)*maturity*interestRate);
 			}
 		} else {
@@ -286,7 +286,7 @@ public class MCPricer {
 		double riskFreeRate = 0.05;
 		*/
 				
-		int numberOfTradingDaysPerYear = 252;		
+		int numberOfTradingDaysPerYear = 1;		
 		MCPricer pricer = new MCPricer(underlyingPrice, volatility, riskFreeRate, numberOfPaths, numberOfTradingDaysPerYear, maxMaturity);
 		System.out.println("Generating paths...");
 		pricer.generatePaths();
