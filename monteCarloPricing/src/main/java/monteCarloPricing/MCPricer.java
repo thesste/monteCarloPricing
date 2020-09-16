@@ -4,6 +4,12 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Scanner;
 
+/**
+ * Class allows for calculation of option prices and corresponding greeks.
+ * The computation of the results is based on Monte-Carlo Simulation.
+ * @author thesste
+ *
+ */
 public class MCPricer {
 	
 	private double underlyingPrice;
@@ -87,6 +93,15 @@ public class MCPricer {
 	 * Constructor
 	 */
 	
+	/**
+	 * This methods constructs the pricer.
+	 * @param underlyingPrice underlying price
+	 * @param sigma underlying's volatility
+	 * @param interestRate market's risk-free interest rate
+	 * @param numberOfPaths number of paths to be generated
+	 * @param numberOfTradingDaysPerYear number of trading days per year
+	 * @param maxMaturityInYears maximum maturity of the options that can be priced
+	 */
 	public MCPricer(double underlyingPrice, double sigma, double interestRate, int numberOfPaths,
 			int numberOfTradingDaysPerYear, double maxMaturityInYears) {
 
@@ -96,28 +111,33 @@ public class MCPricer {
 		this.numberOfPaths = numberOfPaths;
 		this.numberOfTradingDaysPerYear = numberOfTradingDaysPerYear;
 		this.maxMaturityInYears = maxMaturityInYears;
+		
+		this.simulatedTradingDays = (int) maxMaturityInYears*numberOfTradingDaysPerYear;
+		this.timeStepPerTradingDay = Math.pow(numberOfTradingDaysPerYear, -1);
 	}
 	
 	/*
 	 * Path Generator
 	 */
 	
-	public void calculateSimulatedTradingDays() {
-		this.simulatedTradingDays = (int) maxMaturityInYears*numberOfTradingDaysPerYear;
-	}
-
-	public void calculateTimeStepPerTradingDay() {
-		this.timeStepPerTradingDay = Math.pow(numberOfTradingDaysPerYear, -1);
-	}
-	
+	/**
+	 * Calculates the next day's underlying price with the underlying price following a Geometric Brownian Motion over time
+	 * @param previousUnderlyingEodPrice previous end-of-day underlying price
+	 * @param randomCurrent (normally distributed) random increment
+	 * @param volatility underlying's volatility
+	 * @return subsequent end-of-day underlying price
+	 */
 	public double nextDaysUnderlyingEodPrice(double previousUnderlyingEodPrice, double randomCurrent, double volatility) {
 		double nextDaysPrice = previousUnderlyingEodPrice*Math.exp(((interestRate-(0.5*Math.pow(volatility, 2)))*timeStepPerTradingDay) + (volatility*Math.sqrt(timeStepPerTradingDay)*randomCurrent));
 		return nextDaysPrice;
 	}
 	
+	/**
+	 * Generates random underlying paths (by Geometric Brownian Motion) according
+	 * to the specified class instance attributes. To allow for calculation of the 
+	 * trade's greeks also paths for slightly changed input parameters are generated.
+	 */
 	public void generatePaths() {
-		calculateSimulatedTradingDays();
-		calculateTimeStepPerTradingDay();
 		
 		double[][] paths = new double[numberOfPaths][simulatedTradingDays+1];
 		double[][] pathsIncreasedUnderlyingPrice = new double[numberOfPaths][simulatedTradingDays+1];
@@ -151,12 +171,14 @@ public class MCPricer {
 	 * Trade Specifics
 	 */
 	
-	public int calculateActualTradingDays(double maturity) {
-		return (int) maturity*numberOfTradingDaysPerYear;
-		
-	}	
+	/**
+	 * Simulated paths are cut off at the trade's maturity.
+	 * @param simulatedPaths simulated paths
+	 * @param maturity option's maturity
+	 * @return cut off paths
+	 */
 	public double[][] restrictPathsByOptionsMaturity(double[][] simulatedPaths, double maturity) {
-		int actualTradingDays = calculateActualTradingDays(maturity);
+		int actualTradingDays = (int) maturity*numberOfTradingDaysPerYear;
 		
 		double[][] restrictedPaths = new double[numberOfPaths][actualTradingDays+1];
 		
@@ -166,28 +188,47 @@ public class MCPricer {
 		return restrictedPaths;
 	}
 	
-	public double[] calculateDiscountedPayoffsForRestrictedPaths(double[][] restrictedPaths, double strike, double barrier, double maturity, String optionType, String barrierType) {
+	/**
+	 * Calculates the discounted pay-offs for the paths
+	 * @param paths paths
+	 * @param strike strike price
+	 * @param barrier barrier value
+	 * @param maturity maturity
+	 * @param optionType option type
+	 * @param barrierType barrier type
+	 * @return discounted payoffs for each path
+	 */
+	public double[] calculateDiscountedPayoffsForPaths(double[][] paths, double strike, double barrier, double maturity, String optionType, String barrierType) {
 		
 		double[] discountedPayoffsForPaths = new double[numberOfPaths];
 		
 		if (barrierType.equals("None")) {
 			for (int currentPathNumber = 0; currentPathNumber<numberOfPaths; currentPathNumber++) {
 				FinancialInstrument currentInstrument = new EuropeanCallPut(strike, optionType);
-				discountedPayoffsForPaths[currentPathNumber] = currentInstrument.payoff(restrictedPaths[currentPathNumber])*Math.exp((-1)*maturity*interestRate);
+				discountedPayoffsForPaths[currentPathNumber] = currentInstrument.payoff(paths[currentPathNumber])*Math.exp((-1)*maturity*interestRate);
 			}
 		} else {
 			for (int currentPathNumber = 0; currentPathNumber<numberOfPaths; currentPathNumber++) {
 				FinancialInstrument currentInstrument = new KnockInOutBarrierCallPut(strike, barrier, optionType, barrierType);
-				discountedPayoffsForPaths[currentPathNumber] = currentInstrument.payoff(restrictedPaths[currentPathNumber])*Math.exp((-1)*maturity*interestRate);
+				discountedPayoffsForPaths[currentPathNumber] = currentInstrument.payoff(paths[currentPathNumber])*Math.exp((-1)*maturity*interestRate);
 			}
 		}
 		return discountedPayoffsForPaths;
 	}
 	
+	/**
+	 * Calculates the option price for 2 types of options: Plain vanilla options and barrier options
+	 * @param strike strike price
+	 * @param barrier barrier value
+	 * @param maturity maturity
+	 * @param optionType option type
+	 * @param barrierType barrier type
+	 * @return option's price
+	 */
 	public double calculateOptionPrice(double strike, double barrier, double maturity, String optionType, String barrierType) {
 		
 		double[][] restrictedPaths = restrictPathsByOptionsMaturity(paths, maturity);
-		double[] discountedPayoffsForPaths = calculateDiscountedPayoffsForRestrictedPaths(restrictedPaths, strike, barrier, maturity, optionType, barrierType);
+		double[] discountedPayoffsForPaths = calculateDiscountedPayoffsForPaths(restrictedPaths, strike, barrier, maturity, optionType, barrierType);
 		double price = Arrays.stream(discountedPayoffsForPaths).average().orElse(Double.NaN);
 		
 		return price;
@@ -197,13 +238,22 @@ public class MCPricer {
 	 *  Greeks
 	 */
 	
+	/**
+	 * Calculates the option's delta
+	 * @param strike strike price
+	 * @param barrier barrier value
+	 * @param maturity maturity
+	 * @param optionType option type
+	 * @param barrierType barrier type
+	 * @return option's delta
+	 */
 	public double calculateDelta(double strike, double barrier, double maturity, String optionType, String barrierType) {
 				
 		double[][] restrictedPaths = restrictPathsByOptionsMaturity(paths, maturity);
-		double[] discountedPayoffsForPaths = calculateDiscountedPayoffsForRestrictedPaths(restrictedPaths, strike, barrier, maturity, optionType, barrierType);
+		double[] discountedPayoffsForPaths = calculateDiscountedPayoffsForPaths(restrictedPaths, strike, barrier, maturity, optionType, barrierType);
 		
 		double[][] restrictedPathsIncreasedUnderlyingPrice = restrictPathsByOptionsMaturity(pathsIncreasedUnderlyingPrice, maturity);
-		double[] discountedPayoffsForPathsIncreasedUnderlyingPrice = calculateDiscountedPayoffsForRestrictedPaths(restrictedPathsIncreasedUnderlyingPrice, strike, barrier, maturity, optionType, barrierType);
+		double[] discountedPayoffsForPathsIncreasedUnderlyingPrice = calculateDiscountedPayoffsForPaths(restrictedPathsIncreasedUnderlyingPrice, strike, barrier, maturity, optionType, barrierType);
 
 		double[] discountedPayoffDeltas = new double[numberOfPaths];
 		
@@ -213,16 +263,25 @@ public class MCPricer {
 		return Arrays.stream(discountedPayoffDeltas).average().orElse(Double.NaN) / (double) deltaUnderlying;		
 	}
 	
+	/**
+	 * Calculates the option's gamma
+	 * @param strike strike price
+	 * @param barrier barrier value
+	 * @param maturity maturity
+	 * @param optionType option type
+	 * @param barrierType barrier type
+	 * @return option's gamma
+	 */
 	public double calculateGamma(double strike, double barrier, double maturity, String optionType, String barrierType) {
 
 		double[][] restrictedPaths = restrictPathsByOptionsMaturity(paths, maturity);
-		double[] discountedPayoffsForPaths = calculateDiscountedPayoffsForRestrictedPaths(restrictedPaths, strike, barrier, maturity, optionType, barrierType);
+		double[] discountedPayoffsForPaths = calculateDiscountedPayoffsForPaths(restrictedPaths, strike, barrier, maturity, optionType, barrierType);
 		
 		double[][] restrictedPathsIncreasedUnderlyingPrice = restrictPathsByOptionsMaturity(pathsIncreasedUnderlyingPrice, maturity);
-		double[] discountedPayoffsForPathsIncreasedUnderlyingPrice = calculateDiscountedPayoffsForRestrictedPaths(restrictedPathsIncreasedUnderlyingPrice, strike, barrier, maturity, optionType, barrierType);
+		double[] discountedPayoffsForPathsIncreasedUnderlyingPrice = calculateDiscountedPayoffsForPaths(restrictedPathsIncreasedUnderlyingPrice, strike, barrier, maturity, optionType, barrierType);
 
 		double[][] restrictedPathsDecreasedUnderlyingPrice = restrictPathsByOptionsMaturity(pathsDecreasedUnderlyingPrice, maturity);
-		double[] discountedPayoffsForPathsDecreasedUnderlyingPrice = calculateDiscountedPayoffsForRestrictedPaths(restrictedPathsDecreasedUnderlyingPrice, strike, barrier, maturity, optionType, barrierType);
+		double[] discountedPayoffsForPathsDecreasedUnderlyingPrice = calculateDiscountedPayoffsForPaths(restrictedPathsDecreasedUnderlyingPrice, strike, barrier, maturity, optionType, barrierType);
 				
 		double[] discountedPayoffGammas = new double[numberOfPaths];
 		
@@ -231,14 +290,23 @@ public class MCPricer {
 		}
 		return Arrays.stream(discountedPayoffGammas).average().orElse(Double.NaN) / (double) Math.pow(deltaUnderlying, 2);		
 	}
-
+	
+	/**
+	 * Calculates the option's vega
+	 * @param strike strike price
+	 * @param barrier barrier value
+	 * @param maturity maturity
+	 * @param optionType option type
+	 * @param barrierType barrier type
+	 * @return option's vega
+	 */
 	public double calculateVega(double strike, double barrier, double maturity, String optionType, String barrierType) {
 
 		double[][] restrictedPaths = restrictPathsByOptionsMaturity(paths, maturity);
-		double[] discountedPayoffsForPaths = calculateDiscountedPayoffsForRestrictedPaths(restrictedPaths, strike, barrier, maturity, optionType, barrierType);
+		double[] discountedPayoffsForPaths = calculateDiscountedPayoffsForPaths(restrictedPaths, strike, barrier, maturity, optionType, barrierType);
 
 		double[][] restrictedPathsIncreasedVolatility = restrictPathsByOptionsMaturity(pathsIncreasedVolatility, maturity);
-		double[] discountedPayoffsForPathsIncreasedVolatility = calculateDiscountedPayoffsForRestrictedPaths(restrictedPathsIncreasedVolatility, strike, barrier, maturity, optionType, barrierType);
+		double[] discountedPayoffsForPathsIncreasedVolatility = calculateDiscountedPayoffsForPaths(restrictedPathsIncreasedVolatility, strike, barrier, maturity, optionType, barrierType);
 		
 		double[] discountedPayoffVegas = new double[numberOfPaths];
 		

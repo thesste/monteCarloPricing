@@ -1,7 +1,7 @@
 package monteCarloPricing;
 
 /**
- * 
+ * Class allows for calculation of the payoff of a barrier option.
  * @author thesste
  *
  */

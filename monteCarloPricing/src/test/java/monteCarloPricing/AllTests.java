@@ -11,6 +11,11 @@ import org.junit.runners.Suite.SuiteClasses;
 				EuropeanCallPutPayoffTest.class,
 				BarrierCallPutPayoffTest.class,
 				IsActiveTest.class})
+/**
+ * Class to run all tests at once
+ * @author thesste
+ *
+ */
 public class AllTests {
 
 }

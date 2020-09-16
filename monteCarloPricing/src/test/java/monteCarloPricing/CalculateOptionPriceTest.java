@@ -5,8 +5,16 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import net.finmath.functions.AnalyticFormulas;
 
+/**
+ * 
+ * @author thesste
+ *
+ */
 public class CalculateOptionPriceTest {
 
+	/**
+	 * Test method for {@link monteCarloPricing.MCPricer#calculateOptionPrice(double strike, double barrier, double maturity, String optionType, String barrierType)}.
+	 */
 	@Test
 	public void testCalculateOptionPrice() {
 		

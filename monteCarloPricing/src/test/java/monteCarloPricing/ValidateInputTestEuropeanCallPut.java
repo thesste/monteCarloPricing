@@ -4,8 +4,16 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+/**
+ * 
+ * @author thesste
+ *
+ */
 public class ValidateInputTestEuropeanCallPut {
 
+	/**
+	 * Test method for {@link monteCarloPricing.EuropeanCallPut#validateInput(String input)}.
+	 */
 	@Test
 	public void testValidateInput() {
 		EuropeanCallPut test = new EuropeanCallPut(100, "Call");

@@ -1,7 +1,7 @@
 package monteCarloPricing;
 
 /**
- * Class allows for calculation of the payoff for a plain vanilla option.
+ * Class allows for calculation of the payoff of a plain vanilla option.
  * @author thesste
  *
  */

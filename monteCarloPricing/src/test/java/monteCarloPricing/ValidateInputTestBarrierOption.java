@@ -4,8 +4,16 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
+/**
+ * 
+ * @author thesste
+ *
+ */
 public class ValidateInputTestBarrierOption {
 
+	/**
+	 * Test method for {@link monteCarloPricing.KnockInOutBarrierCallPut#validateInput(String input, String[] validInputs)}.
+	 */
 	@Test
 	public void testValidateInput() {
 		KnockInOutBarrierCallPut test = new KnockInOutBarrierCallPut(100, 90, "Call", "UpIn");
