@@ -7,7 +7,10 @@ import org.junit.runners.Suite.SuiteClasses;
 @RunWith(Suite.class)
 @SuiteClasses({ CalculateOptionPriceTest.class,
 				ValidateInputTestBarrierOption.class,
-				ValidateInputTestEuropeanCallPut.class })
+				ValidateInputTestEuropeanCallPut.class,
+				EuropeanCallPutPayoffTest.class,
+				BarrierCallPutPayoffTest.class,
+				IsActiveTest.class})
 public class AllTests {
 
 }

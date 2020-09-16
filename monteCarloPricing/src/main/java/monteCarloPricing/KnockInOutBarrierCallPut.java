@@ -1,5 +1,10 @@
 package monteCarloPricing;
 
+/**
+ * 
+ * @author thesste
+ *
+ */
 public class KnockInOutBarrierCallPut implements FinancialInstrument {
 	
 	private double strike;
@@ -60,6 +65,13 @@ public class KnockInOutBarrierCallPut implements FinancialInstrument {
 		return valid;
 	}
 	
+	/**
+	 * This method constructs a path-dependent barrier option and validates the option and barrier type.
+	 * @param strike strike price
+	 * @param barrier barrier value
+	 * @param optionType option type
+	 * @param barrierType barrier type
+	 */
 	public KnockInOutBarrierCallPut(double strike, double barrier, String optionType, String barrierType) {
 
 		assert validateInput(optionType, validOptionTypes)  : "\nPlease select a valid option type!";
@@ -71,6 +83,11 @@ public class KnockInOutBarrierCallPut implements FinancialInstrument {
 		this.barrierType = barrierType;
 	}
 	
+	/**
+	 * It is checked whether the barrier option was activated / was not deactivated at maturity.
+	 * @param underlyingPath underlying path
+	 * @return true if option is (still) active at maturity, false otherwise
+	 */
 	public boolean isActive(double[] underlyingPath) {	
 		boolean active;
 		if (barrierType.equals("UpIn")) {
@@ -110,7 +127,11 @@ public class KnockInOutBarrierCallPut implements FinancialInstrument {
 		}
 		return active;
 	}
-
+	
+	/**
+	 * Calculates the option's payoff given a specific underlying path
+	 * @return option's payoff
+	 */
 	public double payoff(double[] underlyingPath) {
 		if (optionType.equals("Call")) {
 			if (isActive(underlyingPath)) {

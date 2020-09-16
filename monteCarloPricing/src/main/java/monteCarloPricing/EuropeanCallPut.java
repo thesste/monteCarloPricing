@@ -48,8 +48,7 @@ public class EuropeanCallPut implements FinancialInstrument {
 	}
 	
 	/**
-	 * This method constructs a European Call option and validates the option type.
-	 * 
+	 * This method constructs a European plain vanilla option and validates the option type.
 	 * @param strike strike price
 	 * @param optionType 'Call' or 'Put'
 	 */
