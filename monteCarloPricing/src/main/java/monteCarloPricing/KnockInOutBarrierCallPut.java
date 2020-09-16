@@ -49,7 +49,22 @@ public class KnockInOutBarrierCallPut implements FinancialInstrument {
 		return validBarrierTypes;
 	}
 
+	public boolean validateInput(String input, String[] validInputs) {
+		boolean valid = false;
+		for (int currentValidInputNumber = 0; currentValidInputNumber<validInputs.length; currentValidInputNumber++) {
+			if (input.equals(validInputs[currentValidInputNumber])) {
+				valid = true;
+				break;
+			}
+		}
+		return valid;
+	}
+	
 	public KnockInOutBarrierCallPut(double strike, double barrier, String optionType, String barrierType) {
+
+		assert validateInput(optionType, validOptionTypes)  : "\nPlease select a valid option type!";
+		assert validateInput(barrierType, validBarrierTypes)  : "\nPlease select a valid barrier type!";
+		
 		this.strike = strike;
 		this.barrier = barrier;
 		this.optionType = optionType;
@@ -95,21 +110,8 @@ public class KnockInOutBarrierCallPut implements FinancialInstrument {
 		}
 		return active;
 	}
-	
-	public boolean validateInput(String input, String[] validInputs) {
-		boolean valid = false;
-		for (int currentValidInputNumber = 0; currentValidInputNumber<validInputs.length; currentValidInputNumber++) {
-			if (input.equals(validInputs[currentValidInputNumber])) {
-				valid = true;
-				break;
-			}
-		}
-		return valid;
-	}
 
 	public double payoff(double[] underlyingPath) {
-		assert validateInput(optionType, validOptionTypes)  : "\nPlease select a valid option type!";
-		assert validateInput(barrierType, validBarrierTypes)  : "\nPlease select a valid barrier type!";
 		if (optionType.equals("Call")) {
 			if (isActive(underlyingPath)) {
 				return Math.max(underlyingPath[underlyingPath.length-1] - strike, 0);

@@ -30,19 +30,7 @@ public class EuropeanCallPut implements FinancialInstrument {
 	public String[] getValidOptionTypes() {
 		return validOptionTypes;
 	}
-	
-	/**
-	 * This constructs a European Call option.
-	 * 
-	 * @param strike strike price
-	 * @param optionType 'Call' or 'Put'
-	 */
-	public EuropeanCallPut(double strike, String optionType) {
-		super();
-		this.strike = strike;
-		this.optionType = optionType;
-	}
-	
+
 	/**
 	 * It is checked whether the option type is among the 2 valid types 'Call' or 'Put'
 	 * @param input option type
@@ -59,8 +47,25 @@ public class EuropeanCallPut implements FinancialInstrument {
 		return valid;
 	}
 	
-	public double payoff(double[] underlyingPath) {
+	/**
+	 * This method constructs a European Call option and validates the option type.
+	 * 
+	 * @param strike strike price
+	 * @param optionType 'Call' or 'Put'
+	 */
+	public EuropeanCallPut(double strike, String optionType) {
+		
 		assert validateInput(optionType)  : "\nPlease select a valid option type!";
+
+		this.strike = strike;		
+		this.optionType = optionType;
+	}
+		
+	/**
+	 * Calculates the option's payoff given a specific underlying path
+	 * @return option's payoff
+	 */
+	public double payoff(double[] underlyingPath) {
 		double underlyingValueAtMaturity = underlyingPath[underlyingPath.length-1];
 		if (optionType.equals("Call")) {
 			return Math.max(underlyingValueAtMaturity - strike, 0);
