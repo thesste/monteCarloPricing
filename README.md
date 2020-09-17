@@ -8,7 +8,7 @@ java -jar -ea monteCarloPricing-0.0.1-SNAPSHOT.jar
 
 Assumptions while Developing the Pricer
 - Number of Trading Days per Year: 253 (as per NYSE / NASDAQ)
-- If user's maturity does not translate to an integer in terms of trading days, the number of trading days is rounded down to the next integer.
+- If user's maturity does not translate to an integer in terms of trading days, the number of trading days is rounded down to the previous integer.
 - Delta and vega calculations are based on forward difference approximation.
 - Gamma calculation is based on central difference approximation.
 
