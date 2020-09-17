@@ -356,7 +356,7 @@ public class MCPricer {
 		double riskFreeRate = input.nextDouble();
 		// */
 				
-		int numberOfTradingDaysPerYear = 252;		
+		int numberOfTradingDaysPerYear = 253;		
 		MCPricer pricer = new MCPricer(underlyingPrice, volatility, riskFreeRate, numberOfPaths, numberOfTradingDaysPerYear, maxMaturity);
 		System.out.println("Generating paths...");
 		pricer.generatePaths();
