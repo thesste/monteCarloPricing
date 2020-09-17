@@ -349,20 +349,12 @@ public class MCPricer {
 		System.out.print("Enter the underlying's spot price: ");
 		double underlyingPrice = input.nextDouble();
 
-		System.out.print("Enter the underlying's volatility: ");
+		System.out.print("Enter the underlying's volatility (e.g. 20% as '0.2'): ");
 		double volatility = input.nextDouble();
 		
-		System.out.print("Enter the market's risk free rate: ");
+		System.out.print("Enter the market's risk free rate (e.g. 5% as '0.05'): ");
 		double riskFreeRate = input.nextDouble();
 		// */
-						
-		/*
-		int numberOfPaths = 100;
-		double maxMaturity = 3;
-		double underlyingPrice = 90;
-		double volatility = 0.2;
-		double riskFreeRate = 0.05;
-		*/
 				
 		int numberOfTradingDaysPerYear = 252;		
 		MCPricer pricer = new MCPricer(underlyingPrice, volatility, riskFreeRate, numberOfPaths, numberOfTradingDaysPerYear, maxMaturity);
@@ -417,7 +409,7 @@ public class MCPricer {
 			double vega = pricer.calculateVega(strike, barrier, maturity, optionType, barrierType);
 			System.out.println("Vega: " + vega);
 			
-			System.out.print("Do you want to price another trade based on the same underlying paths? (Enter true or false): ");
+			System.out.print("Do you want to price another trade based on the same underlying paths? (Enter 'true' or 'false'): ");
 			anotherTrade = input.nextBoolean();
 		
 		}	
