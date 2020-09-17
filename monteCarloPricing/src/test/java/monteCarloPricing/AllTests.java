@@ -11,7 +11,8 @@ import org.junit.runners.Suite.SuiteClasses;
 				EuropeanCallPutPayoffTest.class,
 				BarrierCallPutPayoffTest.class,
 				IsActiveTest.class,
-				CalculateDiscountedPayoffTest.class})
+				CalculateDiscountedPayoffTest.class,
+				CalculateGreeksTest.class})
 /**
  * Class to run all tests at once
  * @author thesste
